@@ -13,7 +13,7 @@ The whole thing started like that :
 
 Which is quite impressive!
 
-The after a few tries it managed to create the functions needed to translate the 3D coordinates into 2D :
+Then after a few tries and reformulations it managed to create the functions needed to translate the 3D coordinates into 2D :
 
 ![image](https://user-images.githubusercontent.com/15731540/215318104-29dc1c56-076c-40ce-9658-0d2d52cbda23.png)
 
