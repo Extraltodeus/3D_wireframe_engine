@@ -6,3 +6,10 @@ Some shortcuts are not shown in the UI :
 - alpha 1-2 : change sphere resolution
 - alpha 3-4 : change sphere size
 - Escape : quit
+
+
+chatGPT struggled with the function to create a sphere would output functions that would create such things :
+
+![image](https://user-images.githubusercontent.com/15731540/215317927-e38870cd-77ea-442c-bec0-93483291b3a3.png)
+
+Until I asked it to create a sphere made of multiple circles of a diameter relative to their distance to the center.
