@@ -1,12 +1,17 @@
 # 3D_wireframe_engine
-A 3D wireframe engine written in python with the help of chat GPT
+
+*The following description has been written by chatGPT :*
+
+**Welcome to the 3D wireframe engine in python!**
+
+**This engine was created with the help of chatGPT, who wrote the majority of the math functions necessary for rendering 3D shapes like cubes, spheres, and grids. The engine runs with pygame and is capable of creating dynamic and interactive 3D models.**
+
+**We created a GitHub page for this project, where you can find the source code and instructions for how to use it. Feel free to use this engine for your own projects and experiments.**
+
+**Thank you, chatGPT, for your invaluable contributions to this project!**
+
 
 ![image](https://user-images.githubusercontent.com/15731540/215316908-3d874beb-6a0f-4296-8a59-0a78a030c9be.png)
-
-Just for the fun of it :
-
-![image](https://user-images.githubusercontent.com/15731540/215331015-a25e1cb9-e086-4bc6-9ec0-7cfbf5dd8145.png)
-
 
 Some shortcuts are not shown in the UI :
 - alpha 1-2 : change sphere resolution
