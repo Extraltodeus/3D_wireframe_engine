@@ -21,7 +21,7 @@ Then after a few tries and reformulations it managed to create the functions nee
 
 ![image](https://user-images.githubusercontent.com/15731540/215318127-1922d2a8-f453-4e72-9e53-86ac0761e34b.png)
 
-chatGPT struggled with the function to create a sphere would output functions that would create such things :
+chatGPT struggled with the function to create a sphere and would output functions that would create such things :
 
 ![image](https://user-images.githubusercontent.com/15731540/215317927-e38870cd-77ea-442c-bec0-93483291b3a3.png)
 
