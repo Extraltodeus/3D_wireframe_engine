@@ -363,6 +363,9 @@ def rotate_2D(x, y, angle):
     sina = math.sin(rad)
     return x * cosa - y * sina, x * sina + y * cosa
 
+
+# None camera rotation function works correctly. I kinda sorta tried to figure this out but it didn't work.
+
 # def capture_mouse_moves(mouse_move):
 #     dx, dy = mouse_move
 #     cam_angle_x = camera["rot_X"]/180*math.pi*-1
