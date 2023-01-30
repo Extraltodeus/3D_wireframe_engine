@@ -168,9 +168,17 @@ cam_init=deepcopy(camera)
 
 cam_tilt=False
 auto_cam=True
-show_dots=True
+show_dots=False
 show_lines=True
 show_grid=True
+transparency_toggle=False
+show_wave=False
+
+n_spheres=1
+n_cubes = 12
+
+debug1=0
+debug2=0
 
 def daemonizer(fName, *args):
     try:
@@ -292,6 +300,25 @@ def create_grid_with_center(size, dots_per_row, center_x, center_y, center_z):
             grid.append({"X": x, "Y": z, "Z": y, "links": links})
     return grid
 
+def create_ripple_grid_with_center(size, dots_per_row, center_x, center_y, center_z,ripple_progression):
+    grid = []
+    for i in range(dots_per_row):
+        for j in range(dots_per_row):
+            x = i * size + center_x - (size * dots_per_row) / 2
+            y = center_y + math.sin((i-dots_per_row+ripple_progression)/2)*30
+            z = j * size + center_z - (size * dots_per_row) / 2
+            links = []
+            if i > 0:
+                links.append((i-1) * dots_per_row + j)
+            if i < dots_per_row - 1:
+                links.append((i+1) * dots_per_row + j)
+            if j > 0:
+                links.append(i * dots_per_row + (j-1))
+            if j < dots_per_row - 1:
+                links.append(i * dots_per_row + (j+1))
+            grid.append({"X": x, "Y": y, "Z": z, "links": links})
+    return grid
+
 def shape_to_2D(shape, camera, screen_size):
     result = {"dots": [], "links": []}
     for dot in shape:
@@ -336,15 +363,33 @@ def rotate_2D(x, y, angle):
     sina = math.sin(rad)
     return x * cosa - y * sina, x * sina + y * cosa
 
+# def capture_mouse_moves(mouse_move):
+#     dx, dy = mouse_move
+#     cam_angle_x = camera["rot_X"]/180*math.pi*-1
+#     cam_angle_y = camera["rot_Y"]/180*math.pi*-1
+#     # cam_angle_z = camera["rot_Z"]/180*math.pi*-1
+#     if cam_tilt:
+#         camera["rot_X"] -= dy/100 * math.cos(cam_angle_y) * rotation_speed
+#         camera["rot_Z"] -= dy/100 * math.sin(cam_angle_y) * math.cos(cam_angle_x) * rotation_speed
+#     camera["rot_Y"] += dx/100 * rotation_speed
 def capture_mouse_moves(mouse_move):
+    global debug1, debug2
     dx, dy = mouse_move
-    cam_angle_x = camera["rot_X"]/180*math.pi*-1
-    cam_angle_y = camera["rot_Y"]/180*math.pi*-1
+    cam_angle_x = math.radians(camera["rot_X"])
+    cam_angle_y = math.radians(camera["rot_Y"])
+    cam_angle_z = math.radians(camera["rot_Z"])
+    angle = math.atan2(cam_angle_x,cam_angle_z)/360
+    speed_y = dy/100*rotation_speed
+    speed_x = dx/100*rotation_speed
+    debug1 = cam_angle_y
+    debug2 = cam_angle_y
     # cam_angle_z = camera["rot_Z"]/180*math.pi*-1
     if cam_tilt:
-        camera["rot_X"] -= dy/100 * math.cos(cam_angle_y) * rotation_speed
-        camera["rot_Z"] -= dy/100 * math.sin(cam_angle_y) * math.cos(cam_angle_x) * rotation_speed
-    camera["rot_Y"] += dx/100 * rotation_speed
+        # camera["rot_X"] -= speed_y * math.cos(math.radians(cam_angle_y))
+        # camera["rot_Z"] += speed_y * math.sin(math.radians(cam_angle_y))
+        camera["rot_X"] -= speed_y * math.cos(cam_angle_y)
+        camera["rot_Z"] += speed_y * math.sin(cam_angle_y)*math.cos(angle)
+    camera["rot_Y"] += speed_x
 
 def handle_camera_movement(camera,go_left=False):
     keys = pygame.key.get_pressed()
@@ -368,16 +413,16 @@ def handle_camera_movement(camera,go_left=False):
     if keys[pygame.K_RIGHT]:
         camera["rot_Y"] += rotation_speed/20
     if keys[pygame.K_SPACE]:
-        camera["Y"] += 1.3
+        camera["Y"] += 3
     if keys[pygame.K_LSHIFT]:
-        camera["Y"] -= 1.3
+        camera["Y"] -= 3
 
     if keys[pygame.K_e]:
         camera["FOV_X"] += movement_speed
-        camera["FOV_Y"] += movement_speed
+        camera["FOV_Y"] += movement_speed*1.16
     if keys[pygame.K_q]:
         camera["FOV_X"] -= movement_speed
-        camera["FOV_Y"] -= movement_speed
+        camera["FOV_Y"] -= movement_speed*1.16
     if keys[pygame.K_r]:
         camera = cam_init
 
@@ -420,7 +465,7 @@ pygame.display.set_caption("3D shape")
 pygame.mouse.set_visible(False)
 pygame.event.set_grab(True)
 
-grid = create_grid_with_center(24,14,0,0,-80)
+grid = create_grid_with_center(24,15,0,0,-80)
 
 variation_speed=0.03
 sphere_variation=0
@@ -437,7 +482,7 @@ def smoothie(coord,start,end,progress):
         end=randint(-50,50)
     return coord,start,end
 
-n_cubes = 12
+
 def make_cubes(n_cubes):
     cubes = []
     cubes_rotations = []
@@ -451,7 +496,7 @@ def make_cubes(n_cubes):
     return cubes, cubes_rotations
 cubes, cubes_rotations = make_cubes(n_cubes)
 
-n_spheres=1
+
 sphere_sizes= [4,8,16,32,42,64,128,256]
 sphere_rez  = [4,8,16,20,24,32,50,64]
 sphere_size=4
@@ -476,6 +521,7 @@ def autocam(camera):
 
 daemonizer(cube_refresher)
 
+ripple_progression=0
 # Run the game loop
 running = True
 while running:
@@ -525,8 +571,10 @@ while running:
                     show_lines= not show_lines
                 if event.key == pygame.K_g:
                     show_grid= not show_grid
-                if event.key == pygame.K_f:
-                    camera = roll_camera(camera,0)
+                if event.key == pygame.K_b:
+                    transparency_toggle= not transparency_toggle
+                if event.key == pygame.K_x:
+                    show_wave= not show_wave
 
         if event.type == pygame.MOUSEWHEEL:
             if event.y > 0:
@@ -537,7 +585,13 @@ while running:
         if event.type == pygame.MOUSEMOTION:
             capture_mouse_moves(event.rel)
 
-    screen.fill((0,0,0))
+    if transparency_toggle:
+        s = pygame.Surface(screen_size)
+        s.set_alpha(10)
+        s.fill((0,0,0))
+        screen.blit(s, (0,0))
+    else:
+        screen.fill((0,0,0))
     camera = handle_camera_movement(camera)
     if auto_cam:
         camera = autocam(camera)
@@ -555,9 +609,13 @@ while running:
         # draw_shape(shape_to_2D(create_sphere(7*(math.sin(sphere_variation*math.pi)/2+4),sphere_xyz[0],sphere_xyz[1],sphere_xyz[2],20), camera, screen_size))
         if show_grid:
             draw_shape(shape_to_2D(grid, camera, screen_size))
+        if show_wave:
+            draw_shape(shape_to_2D(create_ripple_grid_with_center(30,32,0,-80,0,ripple_progression), camera, screen_size))
+
+            ripple_progression-=0.1
         for c in range(len(cubes)):
             rotate_shape(cubes[c],cubes_rotations[c])
-            move_shape(cubes[c],cubes_rotations[c],10)
+            move_shape(cubes[c],cubes_rotations[c],n_cubes*2)
             draw_shape(shape_to_2D(cubes[c], camera, screen_size),c)
     except Exception as e:
         print(e)
@@ -575,6 +633,11 @@ while running:
     text_to_screen(screen,"Less cubes (keypad 6)")
     text_to_screen(screen,"Cubes : "+str(n_cubes))
     text_to_screen(screen, "movement_speed (mouse wheel) : "+str(movement_speed))
+    text_to_screen(screen,"Blur (b) : "+str(transparency_toggle))
+    text_to_screen(screen,"Show wave (x) : "+str(show_wave))
+
+    # text_to_screen(screen,"debug1 : "+str(debug1))
+    # text_to_screen(screen,"debug2 : "+str(debug2))
 
 
     pygame.display.flip()
