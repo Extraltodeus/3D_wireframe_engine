@@ -363,9 +363,6 @@ def rotate_2D(x, y, angle):
     sina = math.sin(rad)
     return x * cosa - y * sina, x * sina + y * cosa
 
-
-# None camera rotation function works correctly. I kinda sorta tried to figure this out but it didn't work.
-
 # def capture_mouse_moves(mouse_move):
 #     dx, dy = mouse_move
 #     cam_angle_x = camera["rot_X"]/180*math.pi*-1
@@ -412,9 +409,9 @@ def handle_camera_movement(camera,go_left=False):
         camera["X"] += math.cos(cam_angle) * movement_speed
         camera["Z"] += math.sin(cam_angle) * movement_speed
     if keys[pygame.K_LEFT]:
-        camera["rot_Y"] -= rotation_speed/20
+        camera["rot_Y"] -= rotation_speed/4
     if keys[pygame.K_RIGHT]:
-        camera["rot_Y"] += rotation_speed/20
+        camera["rot_Y"] += rotation_speed/4
     if keys[pygame.K_SPACE]:
         camera["Y"] += 3
     if keys[pygame.K_LSHIFT]:
